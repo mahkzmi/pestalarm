@@ -1,9 +1,9 @@
 import os
-import asyncio
 from datetime import datetime
 from typing import List, Optional
 
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import httpx
 
@@ -65,7 +65,7 @@ def get_db():
     finally:
         db.close()
 
-OWM_API_KEY = "191dcdac9846b2d243b87cc12c9fe376"  # go to open weather map and get an API
+OWM_API_KEY = "191dcdac9846b2d243b87cc12c9fe376"  # کلید API آب و هوا
 
 async def get_weather(lat: float, lon: float) -> dict:
     url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=metric&appid={OWM_API_KEY}"
@@ -99,7 +99,13 @@ def evaluate_rules(weather: dict) -> List[str]:
             pests.append("Gray mold / Botrytis (possible)")
     return pests
 
-from fastapi import Depends
+@app.get("/")
+def read_frontend():
+    index_path = os.path.join(os.path.dirname(__file__), "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    else:
+        return {"error": "index.html not found"}
 
 @app.post("/farms/", response_model=FarmOut)
 def create_farm(farm_in: FarmCreate, db=Depends(get_db)):
@@ -117,7 +123,7 @@ def list_farms(db=Depends(get_db)):
 def list_alerts(db=Depends(get_db)):
     return db.query(Alert).order_by(Alert.timestamp.desc()).limit(100).all()
 
-INTERNAL_TOKEN = "my-secret-token"  #you can change it as you like!!
+INTERNAL_TOKEN = "my-secret-token"  # توکن امنیتی
 
 @app.post("/internal/run-checks")
 async def run_checks(token: Optional[str] = None, db=Depends(get_db)):
