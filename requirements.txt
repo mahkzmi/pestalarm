@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+httpx
+sqlalchemy
+python-dotenv
+pyngrok
+nest_asyncio
