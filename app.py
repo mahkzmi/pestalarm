@@ -10,9 +10,6 @@ import httpx
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
-import nest_asyncio
-nest_asyncio.apply()
-
 # دیتابیس SQLite
 engine = create_engine("sqlite:///pestalert.db", connect_args={"check_same_thread": False})
 Base = declarative_base()
